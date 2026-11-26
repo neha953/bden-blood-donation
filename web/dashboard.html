@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard - BDEN</title><link rel="stylesheet" href="style.css"></head><body>
+<nav id="nav"></nav><div class="wrap"><h2 class="t" id="hi"></h2><div id="bn"></div><div class="grid" id="g"></div>
+<h2 class="t" style="margin-top:30px">My blood requests</h2><div class="grid" id="rq"></div>
+<div style="margin-top:26px"><a class="btn" href="request.html">+ New blood request</a> <a class="btn ghost" href="search.html">Find donors</a></div></div>
+<script src="app.js"></script><script>
+(async()=>{const u=await boot('USER');if(!u)return;const d=await api('dashboard');
+hi.textContent='Welcome back, '+d.name;
+if(d.openEmergencies>0)bn.innerHTML=`<div class="banner">🚨 ${d.openEmergencies} critical emergency request(s) are open right now.</div>`;
+let h='';const x=d.donor;
+if(x){const ok=!x.next_eligible||x.next_eligible.slice(0,10)<=new Date().toISOString().slice(0,10);
+h+=`<div class="card"><div class="mut">Blood group</div><div class="big">${esc(x.blood_group)}</div></div>
+<div class="card"><div class="mut">Total donations</div><div class="big">${x.total_donations}</div></div>
+<div class="card"><div class="mut">Next eligible date</div><div class="big" style="font-size:24px">${ok?'Today':esc(x.next_eligible.slice(0,10))}</div><span class="badge ${ok?'yes':'no'}">${ok?'Eligible to donate':'Waiting period'}</span></div>
+<div class="card"><div class="mut">Profile status</div><div class="big" style="font-size:24px">${x.verified?'Verified':'Pending'}</div><span class="badge ${x.verified?'yes':'PENDING'}">${x.verified?'Visible to patients':'Awaiting admin approval'}</span></div>`}
+g.innerHTML=h||'<div class="card"><h3>Patient account</h3><p class="mut">Use "Request Blood" to post an emergency request.</p></div>';
+const S=['PENDING','APPROVED','FULFILLED','REJECTED'];
+rq.innerHTML=S.map(s=>{const f=d.requestsByStatus.find(r=>r.status===s);return `<div class="card"><span class="badge ${s}">${s}</span><div class="big">${f?f.n:0}</div></div>`}).join('');
+})();
+</script></body></html>
