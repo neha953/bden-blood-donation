@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Request Blood - BDEN</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="pages.css"></head><body><nav id="nav"></nav><div class="wrap"><div class="two">
+<div class="card"><h2 class="t">Request blood</h2><form id="f">
+<label>Patient name</label><input name="patient_name" required>
+<div class="row"><div><label>Blood group</label><select name="blood_group"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div><div><label>Units needed</label><input name="units_needed" type="number" min="1" max="20" value="1"></div></div>
+<label>Hospital</label><select name="hospital_id" id="hs"></select>
+<div class="row"><div><label>City</label><input name="city" required></div><div><label>Urgency</label><select name="urgency"><option>NORMAL</option><option>URGENT</option><option>CRITICAL</option></select></div></div>
+<br><button class="btn" style="width:100%">Submit request</button></form></div>
+<div><h2 class="t">My requests</h2><div class="tw"><table><thead><tr><th>#</th><th>Patient</th><th>Group</th><th>Units</th><th>Urgency</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div></div></div></div>
+<script src="app.js"></script><script>
+async function load(){const d=await api('requests/mine');
+tb.innerHTML=d.length?d.map(x=>`<tr><td>${x.request_id}</td><td>${esc(x.patient_name)}<div class="mut">${esc(x.hospital)}</div></td><td><b>${esc(x.blood_group)}</b></td><td>${x.units_needed}</td><td><span class="badge ${x.urgency}">${x.urgency}</span></td><td><span class="badge ${x.status}">${x.status}</span></td></tr>`).join(''):'<tr><td colspan="6" class="empty">No requests yet</td></tr>';}
+f.onsubmit=async e=>{e.preventDefault();try{const r=await api('requests',Object.fromEntries(new FormData(f)));toast(r.message);f.reset();load()}catch(x){toast(x.message,false)}};
+boot('USER').then(async u=>{if(!u)return;const h=await api('hospitals');hs.innerHTML=h.map(x=>`<option value="${x.hospital_id}">${esc(x.name)}</option>`).join('');load()});
+</script></body></html>

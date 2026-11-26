@@ -1,0 +1,8 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Donations - BDEN</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="pages.css"></head><body><nav id="nav"></nav><div class="wrap"><h2 class="t">My donation history</h2><div class="grid" id="s" style="margin-bottom:22px"></div>
+<div class="tw"><table><thead><tr><th>Date</th><th>Hospital</th><th>Units</th></tr></thead><tbody id="tb"></tbody></table></div></div>
+<script src="app.js"></script><script>
+boot('USER').then(async u=>{if(!u)return;const [d,h]=await Promise.all([api('dashboard'),api('donations/mine')]);
+const x=d.donor,units=h.reduce((a,b)=>a+b.units,0);
+s.innerHTML=x?`<div class="card"><div class="mut">Total donations</div><div class="big">${h.length}</div></div><div class="card"><div class="mut">Units given</div><div class="big">${units}</div></div><div class="card"><div class="mut">Last donation</div><div class="big" style="font-size:24px">${x.last_donation_date?esc(x.last_donation_date.slice(0,10)):'None yet'}</div></div>`:'<div class="card"><p class="mut">Donation history is available for donor accounts.</p></div>';
+tb.innerHTML=h.length?h.map(r=>`<tr><td>${esc(r.donation_date.slice(0,10))}</td><td>${esc(r.hospital)}</td><td>${r.units}</td></tr>`).join(''):'<tr><td colspan="3" class="empty">No donations recorded yet</td></tr>';});
+</script></body></html>

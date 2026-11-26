@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Find Donors - BDEN</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="pages.css"></head><body><nav id="nav"></nav><div class="wrap"><h2 class="t">Find available donors</h2>
+<div class="bar"><div><label>Blood group</label><select id="bg" onchange="go()"><option value="">Any</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+<div><label>City</label><input id="ct" placeholder="e.g. Karachi" oninput="clearTimeout(t);t=setTimeout(go,300)"></div></div>
+<p class="mut" id="cnt" style="margin-bottom:14px"></p><div class="grid" id="r"></div></div>
+<script src="app.js"></script><script>
+let t;
+async function go(){const d=await api('donors/search?blood_group='+encodeURIComponent(bg.value)+'&city='+encodeURIComponent(ct.value));
+cnt.textContent=d.length+' donor(s) available now';
+r.innerHTML=d.length?d.map(x=>`<div class="card dc"><div class="av">${esc(x.full_name.split(' ').map(w=>w[0]).slice(0,2).join(''))}</div>
+<div><h3>${esc(x.full_name)}</h3><div class="mut">📍 ${esc(x.city||'-')}</div><a class="mut" href="tel:${esc(x.phone)}">📞 ${esc(x.phone||'No phone')}</a></div><div class="bg">${esc(x.blood_group)}</div></div>`).join(''):'<div class="empty" style="grid-column:1/-1">No matching donors right now. Try another city or blood group.</div>';}
+boot('USER').then(u=>u&&go());
+</script></body></html>
